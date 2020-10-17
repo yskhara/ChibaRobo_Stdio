@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,8 +12,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
 
 import data.communication.ServerData;
 import data.communication.StateData;
@@ -51,14 +52,14 @@ public class UdpSocket implements Runnable{
 		
 		// open socket
 		try {
-			soc = new DatagramSocket(PORT_NUM);
+			soc = new DatagramSocket(null);
+			soc.setReuseAddress(true);
+			soc.bind(new InetSocketAddress(PORT_NUM));
 			log_mes.log_println("Open UDP Port(" + soc.getLocalPort() + ")");
 		} catch (SocketException e) {
 			e.printStackTrace();
 			JFrame f = new JFrame();
-			JTextPane label = new JTextPane();
-			label.setOpaque(false);
-			label.setText("前回のプログラムが終了できていない可能性があります。\n「タスクマネージャー」の「プロセス」から\n「Java(TM) Platform SE binary」のようなものを終了してください。");
+			JLabel label = new JLabel("Could not open UDP port 58239. (is another process using it?)");
 			JOptionPane.showMessageDialog(f, label);
 			System.exit(1);
 		}
